@@ -48,7 +48,7 @@ $app = new Micro($di);
 $app->post(
     "/test",
     function () use ($app) {
-
+//        тестовый роут
     }
 );
 
@@ -326,8 +326,21 @@ $app->post(
 //Роут для установки статуса заказа между водителем и пассажиром
 $app->put(
     "/apiv1/setOrderStatus",
-    function () {
-        echo "<h1>put - статус заказа</h1>";
+    function () use ($app) {
+
+        $request = new Request();
+
+        if ($request->isPut()) {
+
+        } else {
+           $response = new Response();
+           $response->setJsonContent(
+                [
+                    'Error' => 'Method is not defined'
+                ]
+            );
+            return $response;
+        }
     }
 );
 
