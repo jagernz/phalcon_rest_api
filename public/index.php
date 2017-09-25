@@ -49,68 +49,6 @@ $app->post(
     "/test",
     function () use ($app) {
 
-        $request = new Request();
-
-        if ($request->isPost()) {
-
-            $dataPassangerId = $request->getPost('passanger_id');
-            $dataToken = $request->getPost('access_token');
-            $dataUserLocation = $request->getPost('user_location');
-            $dataCarId = $request->getPost('car_id');
-            $dataDriverId = $request->getPost('driver_id');
-            $dataCountryId = $request->getPost('country_id');
-            $dataPassPhone = $request->getPost('pass_phone');
-            $dataRegionId = $request->getPost('region_id');
-            $dataRoutePoints = $request->getPost('route_points');
-            $dataStartTime = $request->getPost('start_time');
-            $dataPassCount = $request->getPost('pass_count');
-            $dataCallme = $request->getPost('callme');
-            $dataLarge  =$request->getPost('large');
-            $dataPets = $request->getPost('pets');
-            $dataWishListOptionId = $request->getPost('wishlist_option_id');
-            $dataBabyChair = $request->getPost('baby_chair');
-            $dataPaymentType = $request-> getPost('payment_type_id');
-            $dataDefferedPayment = $request->getPost('deffered_payment');
-            $dataDuration = $request->getPost('duration');
-            $dataExtension = $request->getPost('extension');
-            $dataComment = $request->getPost('comment');
-
-            if ($dataToken != 'E@3dkCRjzjN9pskGA2~Ya4?mmPgwvI{K82yz') {
-                $response = new Response();
-                $response->setJsonContent(
-                    [
-                        'Error' => 'Invalid access token: ' . $dataToken
-                    ]
-                );
-                return $response;
-            }
-
-        if (!isset($dataPassangerId) || !isset($dataUserLocation) || !isset($dataCarId) || !isset($dataDriverId) || !isset($dataCountryId) || !isset($dataPassPhone) || !isset($dataRegionId) || !isset($dataRoutePoints) || !isset($dataStartTime) || !isset($dataPassCount) || !isset($dataCallme) || !isset($dataLarge) || !isset($dataPets) || !isset($dataWishListOptionId) || !isset($dataBabyChair) || !isset($dataPaymentType) || !isset($dataDefferedPayment) || !isset($dataDuration)
-            || !isset($dataExtension) || !isset($dataComment)) {
-
-            $response = new Response();
-            $response->setJsonContent(
-                [
-                    'Error' => 'Incorrect parameters of method'
-                ]
-            );
-            return $response;
-        }
-
-        echo 'Пишем логику заказа';
-
-
-        } else {
-
-            $response = new Response();
-            $response->setJsonContent(
-                [
-                    'Error' => 'Method is not defined'
-                ]
-            );
-            return $response;
-
-        }
     }
 );
 
@@ -266,8 +204,122 @@ $app->post(
 //Роут для регистрации заказа в системе
 $app->post(
     "/apiv1/addOrder",
-    function () {
-        echo "<h1>post - добавление заказа</h1>";
+    function () use ($app) {
+
+        $request = new Request();
+
+        if ($request->isPost()) {
+
+            $dataPassangerId = $request->getPost('passanger_id');
+            $dataToken = $request->getPost('access_token');
+            $dataUserLocation = $request->getPost('user_location');
+            $dataCarId = $request->getPost('car_id');
+            $dataDriverId = $request->getPost('driver_id');
+            $dataCountryId = $request->getPost('country_id');
+            $dataPassPhone = $request->getPost('pass_phone');
+            $dataRegionId = $request->getPost('region_id');
+            $dataRoutePoints = $request->getPost('route_points');
+            $dataStartTime = $request->getPost('start_time');
+            $dataPassCount = $request->getPost('pass_count');
+            $dataCallme = $request->getPost('callme');
+            $dataLarge  =$request->getPost('large');
+            $dataPets = $request->getPost('pets');
+            $dataWishListOptionId = $request->getPost('wishlist_option_id');
+            $dataBabyChair = $request->getPost('baby_chair');
+            $dataPaymentType = $request-> getPost('payment_type_id');
+            $dataDefferedPayment = $request->getPost('deffered_payment');
+            $dataDuration = $request->getPost('duration');
+            $dataExtension = $request->getPost('extension');
+            $dataComment = $request->getPost('comment');
+
+            if ($dataToken != 'E@3dkCRjzjN9pskGA2~Ya4?mmPgwvI{K82yz') {
+                $response = new Response();
+                $response->setJsonContent(
+                    [
+                        'Error' => 'Invalid access token: ' . $dataToken
+                    ]
+                );
+                return $response;
+            }
+
+            $user = Users::findFirstById($dataPassangerId);
+            if (!$user) {
+                $response = new Response();
+                $response->setJsonContent(
+                    [
+                        'Error' => 'User is not found'
+                    ]
+                );
+                return $response;
+            }
+
+            if (!isset($dataPassangerId) || !isset($dataUserLocation) || !isset($dataCarId) || !isset($dataDriverId) || !isset($dataCountryId) || !isset($dataPassPhone) || !isset($dataRegionId) || !isset($dataRoutePoints) || !isset($dataStartTime) || !isset($dataPassCount) || !isset($dataCallme) || !isset($dataLarge) || !isset($dataPets) || !isset($dataWishListOptionId) || !isset($dataBabyChair) || !isset($dataPaymentType) || !isset($dataDefferedPayment) || !isset($dataDuration)
+                || !isset($dataExtension) || !isset($dataComment)) {
+
+                $response = new Response();
+                $response->setJsonContent(
+                    [
+                        'Error' => 'Incorrect parameters of method'
+                    ]
+                );
+                return $response;
+            }
+
+            $order = new Orders();
+
+            $order->passanger_id = $dataPassangerId;
+            $order->car_id = $dataCarId;
+            $order->driver_id = $dataDriverId;
+            $order->country_id = $dataCountryId;
+            $order->pass_phone = $dataPassPhone;
+            $order->region_id = $dataRegionId;
+            $order->start_time = $dataStartTime;
+            $order->pass_count = $dataPassPhone;
+            $order->callme = $dataCallme;
+            $order->large = $dataLarge;
+            $order->pets = $dataPets;
+            $order->baby_chair = $dataBabyChair;
+            $order->payment_type_id = $dataPaymentType;
+            $order->deffered_payment = $dataDefferedPayment;
+            $order->duration = $dataDuration;
+            $order->extension = $dataExtension;
+            $order->comment = $dataComment;
+            $order->status_id = '0';
+
+            if ($order->save() == true) {
+
+                $order = Orders::find();
+                $data = $order->getLast();
+
+                $response = new Response();
+                $response->setJsonContent(
+                    [
+                        'order_id' => $data->id,
+                        'order_status_id' => $data->getStatusId(),
+                        'order_status' => $data->ordersstatus->description
+                    ]
+
+                );
+                return $response;
+
+            } else {
+                $messages = $order->getMessages();
+                foreach ($messages as $message) {
+                    echo $message->getMessage(), "<br/>";
+                }
+            }
+
+        } else {
+
+            $response = new Response();
+            $response->setJsonContent(
+                [
+                    'Error' => 'Method is not defined'
+                ]
+            );
+            return $response;
+
+        }
     }
 );
 

@@ -72,5 +72,4 @@ class Users extends Model
     {
         return $this->user_status;
     }
-
 }
