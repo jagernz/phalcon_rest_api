@@ -8,6 +8,8 @@ use Phalcon\Http\Response;
 use Phalcon\HTTP\Request;
 use Phalcon\Filter;
 use Phalcon\Mvc\Model\Query;
+use Phalcon\Cache\Backend\Redis;
+use Phalcon\Cache\Frontend\Data as FrontData;
 
 // Устанавливаем константы пути прилождения
 define('BASE_PATH', dirname(__DIR__));
@@ -41,6 +43,27 @@ $di->set(
     }
 );
 
+//Устанвока Redis
+$di->set(
+    'redis',
+    function () {
+        return new Redis(
+            new FrontData(
+                [
+                    "lifetime" => 172800000,
+                ]
+            ),
+            [
+                "host"       => "localhost",
+                "port"       => 6379,
+                "auth"       => "",
+                "persistent" => false,
+                "index"      => 0,
+            ]
+        );
+    }
+);
+
 // Создаем и привязываем DI к приложению
 $app = new Micro($di);
 
@@ -48,7 +71,6 @@ $app = new Micro($di);
 $app->post(
     "/test",
     function () use ($app) {
-//        тестовый роут
     }
 );
 
@@ -186,6 +208,10 @@ $app->post(
             $token = substr(md5(rand(0, mt_getrandmax())), 0, 16);
             $user->setToken($token);
             $user->save();
+
+            //Добавляем в редис данные (token -> user_id)
+
+            $this->redis->save($token, $user->id);
 
             $response = new Response();
 
@@ -331,6 +357,8 @@ $app->put(
         $request = new Request();
 
         if ($request->isPut()) {
+
+        // не получается получить данные из реквеста при методе PUT, getPut() - не отрабатывает
 
         } else {
            $response = new Response();
